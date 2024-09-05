@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "as6343-micropython"
+version = "0.0.1"
+authors = [
+  { name="Phil", email="phil@pimoroni.com" },
+]
+description = " MicroPython device library for the AS7343 14-channel spectral sensor"
+readme = "README.md"
+classifiers = [
+    "License :: OSI Approved :: MIT License"
+]
+
+[tool.hatch.build]
+include = [
+    "src/as6343.py",
+    "README.md",
+    "LICENSE"
+]
+
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+
+[project.urls]
+GitHub = "https://www.github.com/pimoroni/as6343-micropython"
+Homepage = "https://www.pimoroni.com"
