@@ -93,6 +93,12 @@ AZ_BEFORE_FIRST_CYCLE = const(255)
 
 
 class AS7343:
+    CHANNEL_MAP = [
+        "FZ", "FY", "FXL", "NIR", "VIS1_TL", "VIS1_BR", "FD1",  # Cycle 1
+        "F2", "F3", "F4", "F6", "VIS2_TL", "VIS2_BR", "FD2",    # Cycle 2
+        "F1", "F7", "F8", "F5", "VIS3_TL", "VIS3_BR", "FD2",    # Cycle 3
+    ]
+
     def __init__(self, i2c):
         self.address = 0x39
         self.i2c = i2c
@@ -193,32 +199,21 @@ class AS7343:
         expected_results = (self.num_channels // 6) * 7
         results = []
 
-        while self.r_uint8(0xFD) < expected_results:
+        while self.r_uint8(FIFO_LVL) < expected_results:
             time.sleep(0.01)
 
-        while self.r_uint8(0xFD) > 0 and expected_results > 0:
-            results.append(self.r_uint16(0xFE))
+        # Cycle 1 = FZ, FY, FXL, NIR, 2xVIS, FD
+        # Cycle 2 = F2, F3, F4, F6, 2xVIS, FD
+        # Cycle 3 = F1, F7, F8, F5, 2xVIS, FD
+        while self.r_uint8(FIFO_LVL) > 0 and expected_results > 0:
+            results.append(self.r_uint16(FDATA))
             expected_results -= 1
 
         return results
 
     def read(self):
         self.start_measurement()
-        result = self.read_fifo()
-        return (
-            result[0],  # FZ
-            result[1],  # FY
-            result[2],  # FZL
-            result[3],  # NIR
-            result[7],  # F2
-            result[8],  # F3
-            result[9],  # F4
-            result[10],  # F6
-            result[14],  # F1
-            result[15],  # F5
-            result[16],  # F7
-            result[17],  # F8
-        )
+        return dict(zip(self.CHANNEL_MAP, self.read_fifo()))
 
     def r_uint8(self, reg):
         self.i2c.writeto(self.address, bytes([reg]))
