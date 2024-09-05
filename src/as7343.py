@@ -93,10 +93,13 @@ AZ_BEFORE_FIRST_CYCLE = const(255)
 
 
 class AS7343:
+    # Note that ASTATUS gets prepended to the FIFO data
+    # And FD (Flicker Detect) gets appended.
+    # For the sake of simplicity we don't enable these.
     CHANNEL_MAP = [
-        "FZ", "FY", "FXL", "NIR", "VIS1_TL", "VIS1_BR", "FD1",  # Cycle 1
-        "F2", "F3", "F4", "F6", "VIS2_TL", "VIS2_BR", "FD2",    # Cycle 2
-        "F1", "F7", "F8", "F5", "VIS3_TL", "VIS3_BR", "FD2",    # Cycle 3
+        "FZ", "FY", "FXL", "NIR", "VIS1_TL", "VIS1_BR",  # Cycle 1
+        "F2", "F3", "F4", "F6", "VIS2_TL", "VIS2_BR",    # Cycle 2
+        "F1", "F7", "F8", "F5", "VIS3_TL", "VIS3_BR",    # Cycle 3
     ]
 
     def __init__(self, i2c):
@@ -126,14 +129,13 @@ class AS7343:
 
         # Set the FIFO map
         self.w_uint8(
-            0xFC,
+            FIFO_MAP,
             FIFO_MAP_CH5
             | FIFO_MAP_CH4
             | FIFO_MAP_CH3
             | FIFO_MAP_CH2
             | FIFO_MAP_CH1
             | FIFO_MAP_CH0
-            | FIFO_MAP_ASTATUS,
         )
 
     def set_gain(self, gain):
@@ -193,10 +195,17 @@ class AS7343:
 
     def set_channels(self, c):
         self.num_channels = c
-        temp = self.r_uint8(0xD6)
+        temp = self.r_uint8(CFG20) & ~CFG20_18_CH
+        if c == 18:
+            temp |= CFG20_18_CH
+        if c == 12:
+            temp |= CFG20_12_CH
+        if c == 6:
+            temp |= CFG20_6_CH
+        self.w_uint8(CFG20, temp)
 
     def read_fifo(self):
-        expected_results = (self.num_channels // 6) * 7
+        expected_results = self.num_channels
         results = []
 
         while self.r_uint8(FIFO_LVL) < expected_results:
