@@ -209,7 +209,7 @@ class AS7343:
         results = []
 
         while self.r_uint8(FIFO_LVL) < expected_results:
-            time.sleep(0.01)
+            time.sleep(0.001)
 
         # Cycle 1 = FZ, FY, FXL, NIR, 2xVIS, FD
         # Cycle 2 = F2, F3, F4, F6, 2xVIS, FD
