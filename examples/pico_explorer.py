@@ -4,6 +4,11 @@ from picographics import PicoGraphics, DISPLAY_PICO_W_EXPLORER, PEN_P4
 from pimoroni import Button
 import time
 
+# Edits by Tony Abbey 20240909 with button Y to toggle between channel
+# and wavelength labels, and display  the unscaled values above the bar
+# graphs when in wavelength mode. Max values tweaked to give  a more even
+# set of bars with LED on a white paper reflection.
+
 i2c = PimoroniI2C(sda=20, scl=21)
 as7343 = AS7343(i2c)
 
@@ -36,18 +41,28 @@ NIR = display.create_pen(97, 0, 0)
 WHITE = display.create_pen(255, 255, 255)
 
 # Starting max values for auto-ranging
+#f1 7186, greater
+#f5 1967, greater gain
+#f3 962, lower gain
+#f4 3926, higher gain
+#f3 2600, lower gain
+#FZ 2711, lower gain
+#FXL 5970, higher gain
+#F6 4170, lower gain
+#F7 6774, higher gain
+#F8 1080, lower gain
 MAX_VALUES = [
-    7186,
-    2196,
-    2711,
-    962,
-    3926,
-    4684,
-    1967,
-    5970,
-    4170,
-    6774,
-    1080,
+    500,
+    668,
+    3200,
+    3000,
+    4000,
+    6000,
+    1600,
+    6000,
+    5500,
+    4400,
+    2000,
     13226
 ]
 
@@ -66,6 +81,20 @@ ORDER = [
     "F8",
     "NIR"
 ]
+ORDER2 = [
+    "405",
+    "425",
+    "450",
+    "475",
+    "515",
+    "550",
+    "555",
+    "600",
+    "640",
+    "690",
+    "745",
+    "855"
+]
 
 MARGIN = max([display.measure_text(l) for l in ORDER]) + 2
 
@@ -75,6 +104,8 @@ BAR_HEIGHT = WIDTH - MARGIN
 
 OFFSET_LEFT = int((HEIGHT - 110 - ((BAR_WIDTH + BAR_SPACING) * 12)) / 2)
 
+WHICH_LABEL = 0
+
 while True:
     display.set_pen(0)
     display.clear()
@@ -82,10 +113,10 @@ while True:
 
     for i, label in enumerate(ORDER):
         reading = readings[label]
-
-        MAX_VALUES[i] = max(reading, MAX_VALUES[i])
+        if reading > MAX_VALUES[i]:
+          print (label,reading,MAX_VALUES[i]) # show gain control in action
+        MAX_VALUES[i] = max(reading, MAX_VALUES[i])  # AGC removed
         scaled = int(reading / MAX_VALUES[i] * BAR_HEIGHT)
-    
         y = (i + 1) * (BAR_WIDTH + BAR_SPACING)
         y += OFFSET_LEFT
 
@@ -93,7 +124,11 @@ while True:
         display.rectangle(MARGIN, y, scaled, BAR_WIDTH)
 
         display.set_pen(WHITE)
-        display.text(label, 0, y + 1)
+        if WHICH_LABEL == 0:
+            display.text(label, 0, y + 1)
+        else:
+            display.text(ORDER2[i], 0, y + 1)
+            display.text(str(reading), scaled+35, y + 1)
 
     display.update()
 
@@ -107,5 +142,9 @@ while True:
     elif button_x.is_pressed:
         as7343.set_illumination_current(10)
         as7343.set_illumination_led(True)
+
+    elif button_y.is_pressed:
+        WHICH_LABEL = not WHICH_LABEL
+        time.sleep(0.5)
 
     time.sleep(0.01)
