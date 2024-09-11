@@ -132,12 +132,7 @@ class AS7343:
         # Set the FIFO map
         self.w_uint8(
             FIFO_MAP,
-            FIFO_MAP_CH5
-            | FIFO_MAP_CH4
-            | FIFO_MAP_CH3
-            | FIFO_MAP_CH2
-            | FIFO_MAP_CH1
-            | FIFO_MAP_CH0
+            FIFO_MAP_CH5 | FIFO_MAP_CH4 | FIFO_MAP_CH3 | FIFO_MAP_CH2 | FIFO_MAP_CH1 | FIFO_MAP_CH0
         )
 
     def set_gain(self, gain):
