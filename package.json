@@ -2,5 +2,5 @@
     "urls": [
       ["as7343.py", "github:pimoroni/as7343-micropython/src/as7343.py"]
     ],
-    "version": "0.0.3"
+    "version": "1.0.0"
 }

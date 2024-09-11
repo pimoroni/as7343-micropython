@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "as6343-micropython"
-version = "0.0.1"
+name = "as7343-micropython"
+version = "1.0.0"
 authors = [
   { name="Phil", email="phil@pimoroni.com" },
 ]
@@ -16,7 +16,7 @@ classifiers = [
 
 [tool.hatch.build]
 include = [
-    "src/as6343.py",
+    "src/as7343.py",
     "README.md",
     "LICENSE"
 ]
@@ -25,5 +25,5 @@ include = [
 sources = ["src"]
 
 [project.urls]
-GitHub = "https://www.github.com/pimoroni/as6343-micropython"
+GitHub = "https://www.github.com/pimoroni/as7343-micropython"
 Homepage = "https://www.pimoroni.com"
