@@ -41,16 +41,16 @@ NIR = display.create_pen(97, 0, 0)
 WHITE = display.create_pen(255, 255, 255)
 
 # Starting max values for auto-ranging
-#f1 7186, greater
-#f5 1967, greater gain
-#f3 962, lower gain
-#f4 3926, higher gain
-#f3 2600, lower gain
-#FZ 2711, lower gain
-#FXL 5970, higher gain
-#F6 4170, lower gain
-#F7 6774, higher gain
-#F8 1080, lower gain
+# f1 7186, greater
+# f5 1967, greater gain
+# f3 962, lower gain
+# f4 3926, higher gain
+# f3 2600, lower gain
+# FZ 2711, lower gain
+# FXL 5970, higher gain
+# F6 4170, lower gain
+# F7 6774, higher gain
+# F8 1080, lower gain
 MAX_VALUES = [
     500,
     668,
@@ -96,7 +96,7 @@ ORDER2 = [
     "855"
 ]
 
-MARGIN = max([display.measure_text(l) for l in ORDER]) + 2
+MARGIN = max([display.measure_text(label) for label in ORDER]) + 2
 
 BAR_WIDTH = 16
 BAR_SPACING = 4
@@ -114,7 +114,7 @@ while True:
     for i, label in enumerate(ORDER):
         reading = readings[label]
         if reading > MAX_VALUES[i]:
-          print (label,reading,MAX_VALUES[i]) # show gain control in action
+            print(label, reading, MAX_VALUES[i])     # show gain control in action
         MAX_VALUES[i] = max(reading, MAX_VALUES[i])  # AGC removed
         scaled = int(reading / MAX_VALUES[i] * BAR_HEIGHT)
         y = (i + 1) * (BAR_WIDTH + BAR_SPACING)
@@ -128,14 +128,14 @@ while True:
             display.text(label, 0, y + 1)
         else:
             display.text(ORDER2[i], 0, y + 1)
-            display.text(str(reading), scaled+35, y + 1)
+            display.text(str(reading), scaled + 35, y + 1)
 
     display.update()
 
     if button_b.is_pressed:
         as7343.set_illumination_led(False)
 
-    elif button_a.is_pressed:       
+    elif button_a.is_pressed:
         as7343.set_illumination_current(4)
         as7343.set_illumination_led(True)
 

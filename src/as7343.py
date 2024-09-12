@@ -2,6 +2,8 @@ import time
 import struct
 from micropython import const
 
+__version__ = "1.0.0"
+
 # Bank 1
 AUXID = 0x58  # AUXID    = 0b00001111
 REVID = 0x59  # REVID    = 0b00000111
@@ -130,12 +132,7 @@ class AS7343:
         # Set the FIFO map
         self.w_uint8(
             FIFO_MAP,
-            FIFO_MAP_CH5
-            | FIFO_MAP_CH4
-            | FIFO_MAP_CH3
-            | FIFO_MAP_CH2
-            | FIFO_MAP_CH1
-            | FIFO_MAP_CH0
+            FIFO_MAP_CH5 | FIFO_MAP_CH4 | FIFO_MAP_CH3 | FIFO_MAP_CH2 | FIFO_MAP_CH1 | FIFO_MAP_CH0
         )
 
     def set_gain(self, gain):
